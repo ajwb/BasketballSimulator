@@ -37,28 +37,28 @@ NameChoice = ["Bob", "John", "Joe", "Lebron", "Mike", "Reggie", "Jordan", "Alex"
 TeamNameChoice = ["Falcons", "Lions", "Fire", "Turtles", "Geese", "Dinos",
                   "Friends", "Tigers", "Tarantulas", "Zippers", "Trees",
                   "Kitties", "Puppies", "Lads", "M&Ms", "Schwarmas", "Ploppers",
-                  "Cowguys", "Big Boys", "Beaners", "Weiners", "Terrors", "Germans",
+                  "Cowguys", "Big Boys", "Weiners", "Terrors",
                   "Cleaners"]
 
-class Team:
+class Team: #CLASS for each team
     def __init__(self, name, players):
         self.name = name
-        self.players = players
+        self.players = players #list of players, declared on init
         self.wins = 0
         self.losses = 0
-        self.rawdraft = 0
-        self.draftodds = 0
+        self.rawdraft = 0 #unchanged draft odds number
+        self.draftodds = 0 #altered draft odds number (explained in CreateOdds fxn)
         self.gamesplayed = 0
         self.skillaverage = 0
         self.championships = 0
 
-class Player:
+class Player: #Class for each player
     def __init__(self, name, skill, position):
         self.name = name
         self.skill = skill
         self.position = position
 
-def sortRank(ranking):
+def sortRank(ranking): #Simple sort to sort rankings, at most 16 teams
     for i in range(1,len(ranking)):
         currentvalue = ranking[i]
         position = i
@@ -92,7 +92,7 @@ def game(hometeam, awayteam):
     totalskill = homeskill + awayskill
 
     firstcheckwinner = random.randint(0, totalskill)
-    hometeamadv = random.randint(1, 8)
+    hometeamadv = random.randint(1, 5)
 
     if firstcheckwinner >= 0 and firstcheckwinner <= homeskill:
         winner = hometeam
@@ -100,14 +100,14 @@ def game(hometeam, awayteam):
         winner = awayteam
 
     if winner == awayteam:
-        if hometeamadv == 8:
+        if hometeamadv == 5:
             winner = hometeam
 
     return winner
 
 def season(teams):
     numTeams = len(teams)
-    
+
     for i in range(numTeams):
 
         for j in range(i+1, numTeams):
@@ -122,13 +122,13 @@ def season(teams):
                 teams[j].wins += 1
                 teams[i].losses += 1
                 print(teams[j].name, "won game 1!")
-                
+
             gameTwoWinner = game(teams[j],teams[i])
             if gameTwoWinner == teams[i]:
                 teams[i].wins += 1
                 teams[j].losses += 1
                 print(teams[i].name, "won game 2!")
-                
+
             else:
                 teams[j].wins += 1
                 teams[i].losses += 1
@@ -137,9 +137,9 @@ def season(teams):
             teams[j].gamesplayed += 2
             print("Press ENTER to continue...")
             input()
-    print("The season is over!")           
+    print("The season is over!")
     teams = sortRank(teams)
-    
+
 ##    maxwins = teams[0].wins
 ##    tieteams = [teams[0]]
 ##    for i in range(1,len(teams)-1):
@@ -151,7 +151,7 @@ def season(teams):
 ##        print("Here are the teams participating:")
 ##        for i in range(len(tieteams)):
 ##            print(tieteams[i].name)
-        
+
     print("The winner is...")
     print("Press ENTER to continue...")
     input()
@@ -189,7 +189,7 @@ def CreatePlayer(team, posChoice, pos):
         position = ranPos()
     player = Player(name, skill, position)
     return player
-    
+
 
 def CreateTeams(numTeams):
     Teams = []
@@ -201,7 +201,7 @@ def CreateTeams(numTeams):
             if name not in names:
                 names.append(name)
                 flag = 1
-                
+
         players = []
         players.append(CreatePlayer(name, False, "PG"))
         players.append(CreatePlayer(name, False, "SG"))
@@ -254,7 +254,7 @@ def CreateDraftClass(numClass):
     dictClass[2] = SeparateDraftClassPos(draftClassSF, "SF")
     dictClass[3] = SeparateDraftClassPos(draftClassPF, "PF")
     dictClass[4] = SeparateDraftClassPos(draftClassC, "C")
-    
+
     return dictClass
 
 def PrintDraftClass(draftClass, numClass):
@@ -304,19 +304,19 @@ def DeleteDraftedPlayer(dictClass, playerPosNumber):
 def OrderDraw(lefttodraft,total,draftOrder,pick):
     numLeft = len(lefttodraft)
     current = 0
-    
+
     if numLeft == 1:
         draftOrder.append(lefttodraft[0])
         print("The final pick for the draft goes to the...")
         input("Press ENTER to continue...\n")
         print(lefttodraft[0].name,"\n")
         return draftOrder
-    
+
     elif numLeft > 1:
         for i in range(numLeft):
             lefttodraft[i].draftodds += current
             current += lefttodraft[i].rawdraft
-           
+
         draw = random.randint(0, total)
         flag = 0
         i = 0
@@ -336,7 +336,7 @@ def OrderDraw(lefttodraft,total,draftOrder,pick):
         newlength = len(lefttodraft)
         for i in range(newlength):
             lefttodraft[i].draftodds = lefttodraft[i].rawdraft
-            
+
         draftOrder = OrderDraw(lefttodraft,total,draftOrder,pick)
     return draftOrder
 
@@ -350,7 +350,7 @@ def CreateDraftOrder(teamsList):
         teamsList[i].rawdraft = chance
         teamsList[i].draftodds = chance
         total += teamsList[i].rawdraft
-    
+
     pick = 1
     draftOrder = OrderDraw(lefttodraft,total,draftOrder,pick)
     return draftOrder
@@ -369,8 +369,8 @@ def Draft(teams):
     draftOrder = CreateDraftOrder(teams)
     PrintDraftOrder(draftOrder)
     for i in range(len(draftOrder)):
-        dictClass = SelectDraftPlayer(draftOrder[i], dictClass)       
-    
+        dictClass = SelectDraftPlayer(draftOrder[i], dictClass)
+
     return draftOrder
 
 def main():
